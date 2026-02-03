@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct Widget Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #8E8F70;
+    }
+    .content {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    button {
+      background-color: #8E8F70;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin: 10px 10px 10px 0;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #767657;
+    }
+    
+    /* Widget Styles */
+    .chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #8E8F70;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    .chat-button svg {
+      width: 30px;
+      height: 30px;
+      fill: white;
+    }
+    
+    .chat-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 380px;
+      height: 580px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 40px rgba(0,0,0,0.16);
+      z-index: 9998;
+      display: none;
+    }
+    
+    .chat-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    @media (max-width: 768px) {
+      .chat-container {
+        width: 100vw;
+        height: 100vh;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Direct Widget Test Page</h1>
+  
+  <div class="content">
+    <h2>Test Area</h2>
+    <p>This page has the widget embedded directly in it. You should see a chat button at the bottom right of this page.</p>
+    <p>Try clicking on these buttons to verify that the widget doesn't block interaction:</p>
+    
+    <button onclick="document.getElementById('result').textContent = 'Button 1 was clicked'">Button 1</button>
+    <button onclick="document.getElementById('result').textContent = 'Button 2 was clicked'">Button 2</button>
+    <button onclick="document.getElementById('result').textContent = 'Button 3 was clicked'">Button 3</button>
+    
+    <div id="result" style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+      Result will appear here
+    </div>
+  </div>
+
+  <!-- Direct widget button implementation -->
+  <div class="chat-button" id="chatButton">
+    <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- MessageSquare from Lucide (minimal chat icon - outline only) -->
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  </div>
+  
+  <!-- Chat container without header -->
+  <div class="chat-container" id="chatContainer">
+    <iframe src="/widget-full" title="Aro Ha Chat"></iframe>
+  </div>
+
+  <script>
+    // Simple toggle function
+    document.getElementById('chatButton').addEventListener('click', function() {
+      document.getElementById('chatButton').style.display = 'none';
+      document.getElementById('chatContainer').style.display = 'block';
+    });
+    
+    // Listen for close message from the chat iframe
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'widget-close') {
+        document.getElementById('chatContainer').style.display = 'none';
+        document.getElementById('chatButton').style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>
