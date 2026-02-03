@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Prioritize loading of CSS to hide status messages -->
+    <link rel="stylesheet" href="/hide-vite-messages.css">
+    
+    <!-- Ultra aggressive inline CSS to hide messages -->
+    <style>
+      /* Ultra aggressive hiding of any non-root elements */
+      body > div:not(#root) {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        position: absolute !important;
+        z-index: -9999 !important;
+        height: 0 !important;
+        width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+        clip: rect(0, 0, 0, 0) !important;
+        border: 0 !important;
+      }
+      
+      /* Specifically target fixed position elements with box shadow (Vite status messages) */
+      div[style*="position: fixed"][style*="box-shadow"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+      }
+      
+      /* Hide explicitly by content */
+      div:has(> *:contains("App Status")) {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+      }
+    </style>
+    
+    <!-- Load status message remover script immediately -->
+    <script src="/remove-vite-status.js"></script>
+    
+    <!-- Inline script for immediate execution without waiting for file loading -->
+    <script>
+      // Execute immediately
+      (function() {
+        function clearViteMessages() {
+          // Find any elements matching Vite status message characteristics
+          var elementsToRemove = [];
+          
+          // Find elements with position:fixed and z-index that aren't the chat button
+          document.querySelectorAll('body > div[style*="position: fixed"]').forEach(function(el) {
+            if (el.id !== 'root' && !el.classList.contains('chat-button')) {
+              elementsToRemove.push(el);
+            }
+          });
+          
+          // Find elements containing "App Status" text
+          document.querySelectorAll('body > *').forEach(function(el) {
+            if (el.id !== 'root' && el.textContent && (
+                el.textContent.includes('App Status') || 
+                el.textContent.includes('Rendering') ||
+                el.textContent.includes('If you can see this')
+              )) {
+              elementsToRemove.push(el);
+            }
+          });
+          
+          // Remove all found elements
+          elementsToRemove.forEach(function(el) {
+            if (el.parentNode) {
+              try {
+                el.parentNode.removeChild(el);
+              } catch(e) {
+                // Silent fail
+              }
+            }
+          });
+        }
+        
+        // Run immediately
+        clearViteMessages();
+        
+        // Also run periodically to catch dynamically added elements
+        setInterval(clearViteMessages, 100);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <!-- Main application script -->
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Load status message remover again after everything loads -->
+    <script src="/remove-vite-status.js"></script>
+    
+    <!-- Final cleanup after everything else has loaded -->
+    <script>
+      // Final cleanup after page load
+      document.addEventListener('DOMContentLoaded', function() {
+        // Create an extra style element to catch any remaining status messages
+        var style = document.createElement('style');
+        style.textContent = `
+          /* Target specific Vite status message structure */
+          body > div:not(#root) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+          }
+          
+          /* Target by typical Vite message appearance */
+          div[style*="position: fixed"],
+          div[style*="z-index: 9999"],
+          div[style*="background-color: white"][style*="border-radius"],
+          div:has(> *:contains("App Status")),
+          div:has(> *:contains("Rendering")) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+          }
+        `;
+        document.head.appendChild(style);
+        
+        // Final attempt to remove elements
+        function finalCleanup() {
+          // Remove all non-root divs directly under body
+          document.querySelectorAll('body > div').forEach(function(el) {
+            if (el.id !== 'root') {
+              try {
+                el.parentNode.removeChild(el);
+              } catch(e) {
+                // Silent fail
+              }
+            }
+          });
+        }
+        
+        // Run final cleanup
+        finalCleanup();
+        setTimeout(finalCleanup, 1000);
+      });
+    </script>
+  </body>
+</html>
