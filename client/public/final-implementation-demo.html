@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aro-Ha Chat Widget - Final Implementation</title>
+  <style>
+    :root {
+      --primary: #767657;
+      --primary-dark: #5e5e46;
+      --text: #333;
+      --background: #f8f8f8;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background-color: var(--background);
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1, h2, h3 {
+      color: var(--primary);
+    }
+    
+    .section {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+    
+    .button:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .result {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    
+    .ready-files {
+      background-color: #e8f5e9;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    
+    .ready-files h3 {
+      margin-top: 0;
+    }
+    
+    .ready-files ul {
+      padding-left: 20px;
+    }
+    
+    .ready-files li {
+      margin-bottom: 8px;
+    }
+    
+    .note {
+      background-color: #fff3e0;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Aro-Ha Chat Widget - Final Implementation</h1>
+    
+    <div class="note">
+      <strong>Note:</strong> This page demonstrates the final implementation of the Aro-Ha chat widget with the correct icon style.
+      You should see the chat button in the bottom right corner of this page.
+    </div>
+    
+    <div class="section">
+      <h2>Widget Implementation Testing</h2>
+      <p>Click the buttons below to verify that the chat widget doesn't block page interactions:</p>
+      
+      <button class="button" onclick="document.getElementById('result').textContent = 'Button 1 was clicked'">Button 1</button>
+      <button class="button" onclick="document.getElementById('result').textContent = 'Button 2 was clicked'">Button 2</button>
+      <button class="button" onclick="document.getElementById('result').textContent = 'Button 3 was clicked'">Button 3</button>
+      
+      <div id="result" class="result">
+        Result will appear here
+      </div>
+    </div>
+    
+    <div class="ready-files">
+      <h3>Final Production Files</h3>
+      <p>The following files have been prepared for production deployment:</p>
+      <ul>
+        <li><a href="aro-ha-deployment-guide.html" target="_blank">aro-ha-deployment-guide.html</a> - Complete deployment guide with instructions</li>
+        <li><a href="aro-ha-webflow-embed.js" target="_blank">aro-ha-webflow-embed.js</a> - Final embed code for Webflow</li>
+        <li><a href="direct-test.html" target="_blank">direct-test.html</a> - Working implementation example</li>
+      </ul>
+    </div>
+    
+    <div class="section">
+      <h2>Key Features</h2>
+      <ul>
+        <li>Custom chat bubble icon to match Aro-Ha branding</li>
+        <li>Proper pointer-events handling to prevent blocking page interactions</li>
+        <li>Responsive design with fullscreen mode on mobile devices</li>
+        <li>Seamless embedding in Webflow without CSS conflicts</li>
+        <li>Chat dialog opens directly to active state</li>
+        <li>New chat button with functional confirmation dialog</li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- Include the widget script for demonstration purposes -->
+  <script>
+  /**
+   * Aro-Ha AI Assistant - Widget Embed Demo
+   */
+  (function() {
+    // Configuration
+    const config = {
+      buttonSize: '60px',
+      buttonPosition: { bottom: '20px', right: '20px' },
+      chatWidth: '380px',
+      chatHeight: '580px',
+      chatPosition: { bottom: '20px', right: '20px' },
+      backgroundColor: '#767657',
+      baseUrl: window.location.origin // Use current URL for testing
+    };
+    
+    // Initialize when DOM is fully loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+    
+    function injectStyles() {
+      const styleEl = document.createElement('style');
+      styleEl.innerHTML = `
+        .aro-ha-button-container {
+          position: fixed;
+          z-index: 999998;
+          width: calc(${config.buttonSize} + 8px);
+          height: calc(${config.buttonSize} + 8px);
+          bottom: ${config.buttonPosition.bottom};
+          right: ${config.buttonPosition.right};
+          cursor: pointer;
+          pointer-events: auto;
+          transition: all 0.3s ease;
+          background: transparent;
+          padding: 4px;
+        }
+        
+        .aro-ha-chat-container {
+          position: fixed;
+          z-index: 999997;
+          bottom: ${config.chatPosition.bottom};
+          right: ${config.chatPosition.right};
+          width: ${config.chatWidth};
+          height: ${config.chatHeight};
+          overflow: hidden;
+          transition: all 0.3s ease;
+          opacity: 0;
+          transform: translateY(20px);
+          pointer-events: none;
+          box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+          border-radius: 12px;
+        }
+        
+        .aro-ha-chat-container.active {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+        
+        .aro-ha-button-container.hidden {
+          opacity: 0;
+          transform: scale(0.8);
+          pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+          .aro-ha-chat-container.active {
+            width: 100vw !important;
+            height: 100vh !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            border-radius: 0 !important;
+          }
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+    
+    function createChatButton() {
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'aro-ha-button-container';
+      
+      const buttonIframe = document.createElement('iframe');
+      buttonIframe.style.width = '100%';
+      buttonIframe.style.height = '100%';
+      buttonIframe.style.border = 'none';
+      buttonIframe.style.borderRadius = '50%';
+      buttonIframe.style.overflow = 'hidden';
+      buttonIframe.style.background = 'transparent';
+      buttonIframe.src = `${config.baseUrl}/widget-button`;
+      buttonIframe.title = 'Aro Ha Chat Button';
+      buttonIframe.scrolling = 'no';
+      buttonIframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope';
+      
+      buttonContainer.appendChild(buttonIframe);
+      document.body.appendChild(buttonContainer);
+      
+      return buttonContainer;
+    }
+    
+    function createChatContainer() {
+      const chatContainer = document.createElement('div');
+      chatContainer.className = 'aro-ha-chat-container';
+      
+      document.body.appendChild(chatContainer);
+      return chatContainer;
+    }
+    
+    function init() {
+      injectStyles();
+      
+      const buttonContainer = createChatButton();
+      const chatContainer = createChatContainer();
+      
+      setupEventListeners(buttonContainer, chatContainer);
+    }
+    
+    function setupEventListeners(buttonContainer, chatContainer) {
+      // Listen for messages from the button or chat iframe
+      window.addEventListener('message', (event) => {
+        handleIframeMessages(event, buttonContainer, chatContainer);
+      });
+      
+      // Set up click handler for the button
+      buttonContainer.addEventListener('click', () => {
+        openWidget(buttonContainer, chatContainer);
+      });
+    }
+    
+    function handleIframeMessages(event, buttonContainer, chatContainer) {
+      // Handle messages from either iframe
+      if (event.data) {
+        if (event.data.type === 'widget-close') {
+          closeWidget(buttonContainer, chatContainer);
+        }
+        // Handle button clicks from the button iframe
+        else if (event.data.type === 'button-click') {
+          openWidget(buttonContainer, chatContainer);
+        }
+      }
+    }
+    
+    function toggleWidget(buttonContainer, chatContainer) {
+      if (chatContainer.classList.contains('active')) {
+        closeWidget(buttonContainer, chatContainer);
+      } else {
+        openWidget(buttonContainer, chatContainer);
+      }
+    }
+    
+    function openWidget(buttonContainer, chatContainer) {
+      // Hide the button
+      buttonContainer.classList.add('hidden');
+      
+      // If the chat iframe hasn't been created yet, create it
+      if (!chatContainer.querySelector('iframe')) {
+        const chatIframe = document.createElement('iframe');
+        chatIframe.style.width = '100%';
+        chatIframe.style.height = '100%';
+        chatIframe.style.border = 'none';
+        chatIframe.src = `${config.baseUrl}/widget-full`;
+        chatIframe.title = 'Aro Ha Chat';
+        chatIframe.allow = 'microphone';
+        chatContainer.appendChild(chatIframe);
+      }
+      
+      // Show the chat
+      chatContainer.classList.add('active');
+    }
+    
+    function closeWidget(buttonContainer, chatContainer) {
+      // Hide the chat
+      chatContainer.classList.remove('active');
+      
+      // Show the button
+      buttonContainer.classList.remove('hidden');
+    }
+  })();
+  </script>
+</body>
+</html>
