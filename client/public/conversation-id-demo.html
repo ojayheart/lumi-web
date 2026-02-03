@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversation ID Integration Demo - Aro Ha Widget</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .demo-section {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .code-block {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    
+    .button {
+      background: #8E8F70;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 10px 10px 0;
+    }
+    
+    .button:hover {
+      background: #7a7b5f;
+    }
+    
+    .button.secondary {
+      background: #6c757d;
+    }
+    
+    .button.secondary:hover {
+      background: #5a6268;
+    }
+    
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-weight: 500;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .input-group {
+      margin: 15px 0;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    h1 {
+      color: #8E8F70;
+      border-bottom: 2px solid #8E8F70;
+      padding-bottom: 10px;
+    }
+    
+    h2 {
+      color: #333;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Conversation ID Integration Demo</h1>
+  
+  <p>This page demonstrates how to send conversation IDs to the Aro Ha chat widget iframe. The widget will receive the conversation ID and send a webhook notification.</p>
+  
+  <div class="demo-section">
+    <h2>Quick Test</h2>
+    <p>Test the conversation ID functionality with a sample ID:</p>
+    
+    <div class="input-group">
+      <label for="conversationIdInput">Conversation ID:</label>
+      <input type="text" id="conversationIdInput" value="conv_12345_demo" placeholder="Enter conversation ID">
+    </div>
+    
+    <button class="button" onclick="sendConversationId()">Send Conversation ID to Widget</button>
+    <button class="button secondary" onclick="generateRandomId()">Generate Random ID</button>
+    
+    <div id="status"></div>
+  </div>
+  
+  <div class="demo-section">
+    <h2>How It Works</h2>
+    <p>When you open the widget, this page will:</p>
+    <ol>
+      <li>Create the widget iframe</li>
+      <li>Immediately send the conversation ID via postMessage (after 200ms delay)</li>
+      <li>The widget receives it and logs it to the console</li>
+      <li>The widget sends a webhook notification to the server</li>
+      <li>The widget acknowledges receipt back to this page</li>
+    </ol>
+    <p>The "Send Conversation ID" button manually sends the ID to an already-open widget for testing purposes.</p>
+  </div>
+  
+  <div class="demo-section">
+    <h2>Implementation Code</h2>
+    <p>Here's the JavaScript code used to send the conversation ID:</p>
+    
+    <div class="code-block">
+// Get the iframe element
+const iframe = document.querySelector('iframe[data-aro-widget]');
+
+// Post the conversation ID to the iframe
+iframe.contentWindow.postMessage({
+    type: 'setConversationId',
+    conversationId: 'YOUR_CONVERSATION_ID_HERE'
+}, '*');
+    </div>
+    
+    <h3>Complete Integration Example</h3>
+    <div class="code-block">
+// Function to create widget with conversation ID
+function createWidgetWithConversationId(conversationId) {
+    // Create the iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = '/widget-full';
+    iframe.setAttribute('data-aro-widget', 'true');
+    iframe.style.cssText = 'width: 100%; height: 100%; border: none;';
+    
+    // Add to container
+    const container = document.getElementById('widget-container');
+    container.appendChild(iframe);
+    
+    // Send conversation ID immediately after creation
+    if (conversationId) {
+        setTimeout(() => {
+            iframe.contentWindow.postMessage({
+                type: 'setConversationId',
+                conversationId: conversationId
+            }, '*');
+            console.log('Sent conversation ID on iframe creation:', conversationId);
+        }, 200); // Brief delay for iframe initialization
+    }
+}
+
+// Listen for acknowledgment from the widget
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'conversationIdReceived') {
+        console.log('Widget confirmed receipt of conversation ID:', 
+                   event.data.conversationId);
+    }
+});
+
+// Example usage:
+createWidgetWithConversationId('conv_12345_demo');
+    </div>
+  </div>
+  
+  <div class="demo-section">
+    <h2>Security Considerations</h2>
+    <p>In production, you should:</p>
+    <ul>
+      <li>Validate the conversation ID format before sending</li>
+      <li>Restrict postMessage origins to trusted domains</li>
+      <li>Implement proper error handling</li>
+      <li>Log all conversation ID transfers for audit purposes</li>
+    </ul>
+  </div>
+
+  <script>
+    // Function to send conversation ID to the widget
+    function sendConversationId() {
+      const conversationId = document.getElementById('conversationIdInput').value.trim();
+      const statusDiv = document.getElementById('status');
+      
+      if (!conversationId) {
+        showStatus('Please enter a conversation ID', 'error');
+        return;
+      }
+      
+      // Find the widget iframe
+      const iframe = document.querySelector('iframe[src*="/widget-full"]');
+      
+      if (!iframe) {
+        showStatus('Widget iframe not found. Make sure the widget is open.', 'error');
+        return;
+      }
+      
+      // Send the conversation ID
+      iframe.contentWindow.postMessage({
+        type: 'setConversationId',
+        conversationId: conversationId
+      }, '*');
+      
+      showStatus(`Conversation ID "${conversationId}" sent to widget. Check browser console for logs.`, 'success');
+      console.log('Sent conversation ID to widget:', conversationId);
+    }
+    
+    // Function to generate a random conversation ID
+    function generateRandomId() {
+      const timestamp = Date.now();
+      const randomSuffix = Math.random().toString(36).substring(2, 8);
+      const newId = `conv_${timestamp}_${randomSuffix}`;
+      document.getElementById('conversationIdInput').value = newId;
+      showStatus(`Generated new conversation ID: ${newId}`, 'info');
+    }
+    
+    // Function to show status messages
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('status');
+      statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+      
+      // Clear status after 5 seconds
+      setTimeout(() => {
+        statusDiv.innerHTML = '';
+      }, 5000);
+    }
+    
+    // Listen for messages from the widget iframe
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'conversationIdReceived') {
+        const conversationId = event.data.conversationId;
+        showStatus(`Widget confirmed receipt of conversation ID: ${conversationId}`, 'success');
+        console.log('Widget acknowledged conversation ID:', conversationId);
+      }
+      
+      // Listen for widget ready message (optional - for debugging)
+      if (event.data && event.data.type === 'widget-ready') {
+        console.log('Widget is ready and loaded');
+      }
+    });
+    
+    // Auto-generate an ID on page load
+    window.addEventListener('load', function() {
+      generateRandomId();
+    });
+  </script>
+  
+  <!-- Include the widget embed script -->
+  <script>
+    // Simplified widget embed for demo purposes
+    (function() {
+      // Create chat button
+      const chatButton = document.createElement('div');
+      chatButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #8E8F70;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        cursor: pointer;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+      `;
+      chatButton.innerHTML = `
+        <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+      `;
+      
+      // Create chat container
+      const chatContainer = document.createElement('div');
+      chatContainer.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 380px;
+        height: 580px;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 40px rgba(0,0,0,0.16);
+        z-index: 9998;
+        display: none;
+      `;
+      
+      // Add elements to page
+      document.body.appendChild(chatButton);
+      document.body.appendChild(chatContainer);
+      
+      // Handle button click
+      chatButton.addEventListener('click', function() {
+        if (chatContainer.style.display === 'none') {
+          // Show widget
+          chatContainer.style.display = 'block';
+          chatButton.style.display = 'none';
+          
+          // Create iframe if it doesn't exist
+          if (!chatContainer.querySelector('iframe')) {
+            const iframe = document.createElement('iframe');
+            iframe.src = '/widget-full';
+            iframe.style.cssText = 'width: 100%; height: 100%; border: none;';
+            iframe.setAttribute('data-aro-widget', 'true'); // Add identifier for targeting
+            chatContainer.appendChild(iframe);
+            
+            // Send conversation ID immediately after iframe creation
+            const conversationId = document.getElementById('conversationIdInput').value.trim();
+            if (conversationId) {
+              // Wait a brief moment for iframe to initialize, then send
+              setTimeout(() => {
+                iframe.contentWindow.postMessage({
+                  type: 'setConversationId',
+                  conversationId: conversationId
+                }, '*');
+                showStatus(`Sent conversation ID "${conversationId}" to new widget iframe`, 'info');
+                console.log('Sent conversation ID on iframe creation:', conversationId);
+              }, 200);
+            }
+          }
+        }
+      });
+      
+      // Listen for close messages from iframe
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'widget-close') {
+          chatContainer.style.display = 'none';
+          chatButton.style.display = 'flex';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
