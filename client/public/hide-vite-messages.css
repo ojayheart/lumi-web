@@ -1,0 +1,55 @@
+/**
+ * This stylesheet aggressively hides any Vite status messages
+ * It uses !important tags and a variety of selectors to ensure the message is hidden
+ */
+
+/* Target by message content and element position */
+body > div[style*="position: fixed"],
+body > div[style*="z-index"],
+body > div:not(#root),
+div:has(> p:contains("App Status")),
+div:has(> p:contains("Rendering")),
+div:has(> p:contains("If you can see this")),
+div[data-vite-dev-id],
+div[data-vite-status],
+div[data-vite-dev-status],
+body > div[style*="background-color: white"][style*="box-shadow"],
+body > div[style*="padding"][style*="border-radius"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: -9999 !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+/* Target specifically the Vite status message */
+body > div:first-of-type:not(#root) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide ANY message containing App Status text */
+*:has(> *:contains("App Status")),
+*:has(> *:contains("Rendering")) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Target the status message more specifically with its typical style signature */
+div[style*="position: fixed"][style*="top: 0"][style*="padding: 0.5rem"][style*="background-color: white"][style*="z-index"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
