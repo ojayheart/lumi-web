@@ -1,0 +1,285 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Sagona font */
+@font-face {
+  font-family: 'Sagona';
+  src: url('/fonts/SagonaBook.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  /* Add subtle text shadow for more presence */
+  .text-shadow-subtle {
+    text-shadow: 0 0 0.5px rgba(0,0,0,0.1);
+  }
+  
+  /* Luxury animation for background */
+  @keyframes subtleBackgroundShift {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+  
+  /* Sagona font only for Lumi title in welcome screen */
+  @font-face {
+    font-family: 'Sagona';
+    src: url('/assets/SagonaBook.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  .font-sagona {
+    font-family: 'Sagona', serif;
+  }
+}
+
+/* Widget-specific styles */
+.widget-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.widget-frame {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Base styling for all routes */
+html,
+body,
+#root {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Admin page styles - allow scrolling and normal page behavior */
+body.admin-page,
+body.admin-page #root {
+  overflow: auto !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  background: linear-gradient(to bottom right, #f8fafc, #f1f5f9) !important;
+}
+
+/* Widget pages - hide overflow for embed */
+body:not(.admin-page),
+body:not(.admin-page) #root {
+  overflow: hidden !important;
+}
+
+/* Button animation for very subtle pulsing border with golden tone */
+@keyframes borderPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(178, 151, 90, 0.25);
+  }
+  70% {
+    box-shadow: 0 0 0 3px rgba(178, 151, 90, 0.15);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(178, 151, 90, 0);
+  }
+}
+
+.icon-button-animate {
+  animation: borderPulse 3s infinite;
+  transition: all 0.3s ease-in-out;
+}
+
+.icon-button-animate:hover {
+  transform: scale(1.05);
+  animation: none;
+  box-shadow: 0 0 0 2px rgba(178, 151, 90, 0.4);
+}
+
+/* Diamond star styles */
+/* Animation removed per user request */
+.diamond-star-glow {
+  filter: drop-shadow(0px 0px 2px rgba(178, 151, 90, 0.8)) !important;
+}
+
+/* Sparkle animation */
+@keyframes sparkle {
+  0% {
+    opacity: 0.9;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2) rotate(5deg);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.lucide-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
+}
+
+/* Typing animation for the dots */
+.typing-animation .dot {
+  opacity: 0;
+  animation: typingDot 1.4s infinite;
+  font-size: 1.2em;
+  line-height: 0;
+  position: relative;
+  top: -1px;
+}
+
+.typing-animation .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-animation .dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.typing-animation .dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes typingDot {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+/* Markdown styling for chat messages */
+.markdown-content {
+  /* Make links clickable and styled */
+  & a {
+    color: #0070f3;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  /* Ensure white text color for user markdown text */
+  &.markdown-user a {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+  
+  /* Format lists with proper spacing */
+  & ul, & ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+  }
+  
+  & ul {
+    list-style-type: disc;
+  }
+  
+  & ol {
+    list-style-type: decimal;
+  }
+  
+  /* Style for bold text */
+  & strong {
+    font-weight: 700;
+  }
+  
+  /* Style for italic text */
+  & em {
+    font-style: italic;
+  }
+  
+  /* Style for code blocks and inline code */
+  & code {
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  
+  &.markdown-user code {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Add spacing between paragraphs */
+  & p {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Style for blockquotes */
+  & blockquote {
+    border-left: 3px solid #ccc;
+    margin-left: 0;
+    padding-left: 1rem;
+    color: #666;
+    font-style: italic;
+  }
+  
+  &.markdown-user blockquote {
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Style for headings */
+  & h1, & h2, & h3, & h4, & h5, & h6 {
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  & h1 { font-size: 1.4em; }
+  & h2 { font-size: 1.3em; }
+  & h3 { font-size: 1.2em; }
+  & h4 { font-size: 1.1em; }
+  & h5, & h6 { font-size: 1em; }
+  
+  /* Style for images from VoiceFlow */
+  & img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 0.75rem 0;
+    display: block;
+  }
+}
